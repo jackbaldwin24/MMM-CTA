@@ -85,6 +85,15 @@ module.exports = NodeHelper.create({
     }
 
     return data.eta.filter((train) => {
+      if (train.rt === 'Blue') {
+        const destination = train.destNm?.toLowerCase();
+        const allowedDestinations = ['forest park', 'uic-halsted'];
+
+        if (!allowedDestinations.includes(destination)) {
+          return false;
+        }
+      }
+
       const arrivalTime = new Date(train.arrT);
 
       return arrivalTime - Date.now() > minimumArrivalTime;
