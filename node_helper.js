@@ -85,18 +85,20 @@ module.exports = NodeHelper.create({
     }
 
     return data.eta.filter((train) => {
-      if (train.rt === 'Blue') {
-        const destination = train.destNm?.toLowerCase();
-        const allowedDestinations = ['forest park', 'uic-halsted'];
-
-        if (!allowedDestinations.includes(destination)) {
-          return false;
-        }
-      }
-
       const arrivalTime = new Date(train.arrT);
 
-      return arrivalTime - Date.now() > minimumArrivalTime;
+      if (arrivalTime - Date.now() <= minimumArrivalTime) {
+        return false;
+      }
+
+      if (train.rt === 'Blue') {
+        // CTA API uses trDr 5 for Forest Park-bound, 1 for O'Hare-bound.
+        const directionCode = typeof train.trDr === 'string' ? parseInt(train.trDr, 10) : train.trDr;
+
+        return directionCode === 5;
+      }
+
+      return true;
     }).map((train) => ({
       direction: train.destNm,
       routeColor: this.routeToColor(train.rt),
