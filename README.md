@@ -71,6 +71,7 @@ The `stops` option is an array of objects. Each object represents a stop to disp
       id: 41410,
       name: 'Blue Line',
       minimumArrivalTime: 600000,
+      direction: 5, // CTA trDr: 1 = O'Hare/Northbound/Eastbound, 5 = Forest Park/Southbound/Westbound
     }
   ]
 }
@@ -82,6 +83,9 @@ The `stops` option is an array of objects. Each object represents a stop to disp
 | `id`                  | Stop ID. See [Finding Stop IDs](#finding-stop-ids)                                  |
 | `name`                | Name of stop. This is displayed in the header of the stop's results.                |
 | `minimumArrivalTime`  | The minimum time to arrival for the bus or train to be displayed. In ms. Default 0. |
+| `direction`           | *Train only.* CTA `trDr` direction code (see CTA docs). Example: `1` = O'Hare/Northbound/Eastbound, `5` = Forest Park/Southbound/Westbound. Optional; when omitted all directions are shown. |
+
+CTA direction codes reference: https://www.transitchicago.com/developers/ttdocs/#_Toc296199910
 
 ### Finding Stop IDs
 

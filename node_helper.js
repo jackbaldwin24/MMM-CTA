@@ -37,6 +37,7 @@ module.exports = NodeHelper.create({
             maxResultsTrain,
             trainApiKey,
             stop.minimumArrivalTime ?? 0,
+            stop.direction,
           ),
         };
       }
@@ -76,7 +77,7 @@ module.exports = NodeHelper.create({
     }));
   },
 
-  async getTrainData (id, maxResults, apiKey, minimumArrivalTime) {
+  async getTrainData (id, maxResults, apiKey, minimumArrivalTime, direction) {
     const response = await fetch(this.trainUrl(id, maxResults, apiKey));
     const { ctatt: data } = await response.json();
 
@@ -86,19 +87,18 @@ module.exports = NodeHelper.create({
 
     return data.eta.filter((train) => {
       const arrivalTime = new Date(train.arrT);
+      const directionCode = typeof train.trDr === 'string' ? parseInt(train.trDr, 10) : train.trDr;
+      const requestedDirection = typeof direction === 'string' ? parseInt(direction, 10) : direction;
 
       if (arrivalTime - Date.now() <= minimumArrivalTime) {
         return false;
       }
 
-      if (train.rt === 'Blue') {
-        // CTA API uses trDr 5 for Forest Park-bound, 1 for O'Hare-bound.
-        const directionCode = typeof train.trDr === 'string' ? parseInt(train.trDr, 10) : train.trDr;
-
-        return directionCode === 5;
+      if (!Number.isInteger(requestedDirection)) {
+        return true;
       }
 
-      return true;
+      return directionCode === requestedDirection;
     }).map((train) => ({
       direction: train.destNm,
       routeColor: this.routeToColor(train.rt),
